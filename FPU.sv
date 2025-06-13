@@ -37,8 +37,8 @@ typedef enum logic [1:0]{
 
 state_t EA;
 logic [5:0] exp_A, exp_B, exp_diff, exp_result;
-logic signal [25:0] Valor_A, Valor_B; // 1 bit a mais
-logic signal [25:0] Mantissa_A, Mantissa_B; // 1 bit a mais
+logic [25:0] Valor_A, Valor_B; // 1 bit a mais
+logic [25:0] Mantissa_A, Mantissa_B; // 1 bit a mais
 logic signed [25:0] mantissa_sum; // 1 bit a mais
 logic signal_result; 
 logic greater; // A = 0, B = 1
@@ -47,7 +47,7 @@ logic PRE_done = 0;
 logic SUM_done = 0;
 logic ended = 0;
 
-assign logic BIAS = 31;
+localparam BIAS = 31;
 
 always_ff @(posedge clock, negedge reset)begin
 
