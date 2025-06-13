@@ -6,6 +6,7 @@ add wave -noupdate -label op_A_in -radix hex /tb_FPU/op_A_in
 add wave -noupdate -label op_B_in -radix hex /tb_FPU/op_B_in
 add wave -noupdate -label data_out -radix hex /tb_FPU/data_out
 add wave -noupdate -label status_out -radix binary /tb_FPU/status_out
+add wave -noupdate -label EA -radix symbolic /tb_FPU/dut/EA
 
 
 TreeUpdate [SetDefaultTree]
