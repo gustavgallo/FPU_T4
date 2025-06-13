@@ -1,11 +1,11 @@
 module FPU(
-input logic clock;
-input logic reset;
-input logic [31:0] op_A_in;
-input logic [31:0] op_B_in;
+input logic clock,
+input logic reset,
+input logic [31:0] op_A_in,
+input logic [31:0] op_B_in,
 
-output logic [31:0] data_out;
-output logic [3:0] status_out;
+output logic [31:0] data_out,
+output logic [3:0] status_out
 
 
 );
