@@ -63,8 +63,8 @@ always_ff @(posedge clock, negedge reset)begin
 
             PRE_SUM:begin
                 if(start)begin
-                    Valor_A <= {1, op_A_in[24:0]};
-                    Valor_B <= {1, op_B_in[24:0]};
+                    Valor_A <= {1'b1, op_A_in[24:0]};
+                    Valor_B <= {1'b1, op_B_in[24:0]};
                     exp_A <= op_A_in[30:25] - BIAS;
                     exp_B <= op_B_in[30:25] - BIAS;
                     start <= 0;
