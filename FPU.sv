@@ -29,121 +29,116 @@ typedef enum logic [1:0]{
     
     PRE_SUM,
 
+    AJUST,
+
     SUM,
 
-    AJUST
+    FINAL
 
 } state_t;
 
 state_t EA;
-logic [5:0] exp_A, exp_B, exp_diff, exp_result;
-logic [25:0] Valor_A, Valor_B; // 1 bit a mais
-logic [25:0] Mantissa_A, Mantissa_B; // 1 bit a mais
-logic signed [25:0] mantissa_sum; // 1 bit a mais
-logic signal_result; 
-logic greater; // A = 0, B = 1
-logic start = 1;
-logic PRE_done = 0;
-logic SUM_done = 0;
-logic ended = 0;
+
+
+// Sinais internos
+logic sign_a, sign_b;
+logic [5:0] exp_a, exp_b;
+logic [24:0] mant_a, mant_b;
+logic [5:0] exp_diff;
+logic [25:0] mant_a_aligned, mant_b_aligned;
+logic [5:0] exp_common;
 
 localparam BIAS = 31;
 
+//alinhamento das mantissas e expoentes
+always_comb begin
+    sign_a = op_A_in[31];
+    exp_a  = op_A_in[30:25] - BIAS; // Ajusta o expoente subtraindo o bias
+    mant_a = op_A_in[24:0];
+
+    sign_b = op_B_in[31];
+    exp_b  = op_B_in[30:25] - BIAS; // Ajusta o expoente subtraindo o bias
+    mant_b = op_B_in[24:0];
+
+    if (exp_a > exp_b) begin
+        exp_diff = exp_a - exp_b;
+        mant_a_aligned = {1'b1, mant_a}; // Adiciona o bit implícito 1 para números normalizados
+        mant_b_aligned = {1'b1,mant_b} >> exp_diff; // Alinha mantissa b
+        exp_common = exp_a;
+    end else begin
+        exp_diff = exp_b - exp_a;
+        mant_a_aligned = {1'b1, mant_a} >> exp_diff;
+        mant_b_aligned = {1'b1, mant_b};
+        exp_common = exp_b;
+    end
+
+end
+
+
+// lógica de soma e subtração
+logic pre_done = 0;
+logic [26:0] mant_res;
+logic sign_res;
+logic ajusted = 0;
 always_ff @(posedge clock, negedge reset)begin
 
     if(!reset)begin
-    data_out <= 0;
-    status_out<=0;
-    start <= 1;
-    PRE_done = 0;
+        data_out <= 0;
+        status_out <= 0;
+        pre_done <= 0;
+        mant_res <= 0;
+        ajusted <= 0;
     
     end else begin
         
         case(EA)
 
             PRE_SUM:begin
-                if(start)begin
-                    Valor_A <= {1'b1, op_A_in[24:0]};
-                    Valor_B <= {1'b1, op_B_in[24:0]};
-                    exp_A <= op_A_in[30:25] - BIAS;
-                    exp_B <= op_B_in[30:25] - BIAS;
-                    start <= 0;
 
-                    if(op_A_in[30:25] >= op_B_in[30:25])begin
-                        exp_diff <= (op_A_in[30:25] - op_B_in[30:25]) - BIAS;
-                        exp_result <= op_A_in[30:25] - BIAS;
-                        signal_result <= op_A_in[31] - BIAS;
-                        greater <= 0;
-                
-                    end else begin
+                pre_done <= 1;
+                ajusted <= 0; // Reseta o sinal de ajuste
 
-                        exp_diff <= (op_B_in[30:25] - op_A_in[30:25]) - BIAS;
-                        exp_result <= op_B_in[30:25] - BIAS;
-                        signal_result <= op_B_in[31] - BIAS;
-                        greater <= 1;
-                    end
-
-                    end else begin
-                        if(!PRE_done)begin
-                            if(!greater)begin // if A is greater than
-                                Valor_B <= Valor_B >> exp_diff;
-                            end else begin // if B is greater
-
-                                Valor_A <= Valor_A >> exp_diff;
-
-                            end
-                            PRE_done <= 1;
-                        end    
-                    end// end do else
             end
 
-            AJUST:begin
-                Mantissa_A <= Valor_A[24:0];
-                Mantissa_B <= Valor_B[24:0];
-
-
-                /*if(op_A_in[31])begin
-                    Mantissa_A <= -Mantissa_A;
+            SUM: begin
+                if (sign_a == sign_b) begin // sinais iguais soma
+                    mant_res <= mant_a_aligned + mant_b_aligned;
+                    sign_res <= sign_a;
+                end else begin
+                    if (mant_a_aligned > mant_b_aligned) begin // sinais diferentes subtração
+                        mant_res <= mant_a_aligned - mant_b_aligned;
+                        sign_res <= sign_a;
+                    end else begin
+                        mant_res <= mant_b_aligned - mant_a_aligned;
+                        sign_res <= sign_b;
+                    end
                 end
-
-                if(op_B_in[31])begin
-                    Mantissa_B <= -Mantissa_B;
-                end*/
-                PRE_done <= 0;
+                exp_res <= exp_common;
             end
 
-            SUM:begin
+            AJUST: begin
 
-                if (!SUM_done) begin
-                    mantissa_sum <= Mantissa_A + Mantissa_B;
-                    SUM_done <= 1;
-                end 
-                else begin
-                    // Overflow: se bit 25 aceso, normaliza para direita
-                    if (mantissa_sum[25]) begin
-                        mantissa_sum <= mantissa_sum >> 1;
-                        exp_result <= exp_result + 1;
-                        
-                    end
-                    // Underflow: se bit 24 zerado, normaliza para esquerda
-                    /*
-                    else if (mantissa_sum[24] == 0 && mantissa_sum != 0 && exp_result > 0) begin
-                        mantissa_sum <= mantissa_sum << 1;
-                        exp_result <= exp_result - 1;
-                        
-                    end
-                    */
-                    else begin
-                        // Mantissa normalizada
-                        data_out[31]    <= signal_result;
-                        data_out[30:25] <= exp_result;
-                        data_out[24:0]  <= mantissa_sum[24:0];
-                        ended <= 1;
-                    end
+                // Normaliza o resultado
+                if (mant_res[26]) begin
+                    mant_res <= mant_res >> 1;
+                    exp_res <= exp_res + 1;
+                end else if (!mant_res[25]) begin
+                    mant_res <= mant_res << 1;
+                    exp_res <= exp_res - 1;
+                end else begin
+                    ajusted <= 1; // sinaliza que o ajuste foi feito
                 end
 
             end
-            
+
+            // Ajuste final do resultado
+            FINAL:begin
+
+                data_out <= {sign_res, exp_res + BIAS, mant_res[24:0]}; // Monta o resultado final
+                status_out <= 4'b0000; // Status pode ser ajustado conforme necessário
+
+            end
+
         endcase
 
     end
@@ -160,21 +155,24 @@ always_ff @(posedge clock, negedge reset)begin
         case(EA)
 
             PRE_SUM:begin
-                if(PRE_done) EA <= AJUST;
+                if(pre_done) EA <= SUM;
                 else EA <= PRE_SUM;
 
             end
 
-            AJUST:begin
-
-                EA <= SUM; 
-                
-            end
-
             SUM:begin
 
-                if(ended) EA <= PRE_SUM;
-                else EA <= SUM;
+                EA <= AJUST;
+
+            end
+
+            AJUST:begin
+                if(ajusted) EA <= FINAL;
+                else EA <= AJUST;
+            end
+
+            FINAL:begin
+                EA <= PRE_SUM; // Retorna ao estado inicial para nova operação
             end
 
         endcase

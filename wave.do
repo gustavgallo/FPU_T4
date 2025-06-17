@@ -7,6 +7,10 @@ add wave -noupdate -label op_B_in -radix hex /tb_FPU/op_B_in
 add wave -noupdate -label data_out -radix hex /tb_FPU/data_out
 add wave -noupdate -label status_out -radix binary /tb_FPU/status_out
 add wave -noupdate -label EA -radix symbolic /tb_FPU/dut/EA
+add wave -noupdate -label mant_a /tb_FPU/dut/mant_a
+add wave -noupdate -label mant_b /tb_FPU/dut/mant_b
+add wave -noupdate -label mant_a_aligned /tb_FPU/dut/mant_a_aligned
+add wave -noupdate -label mant_b_aligned /tb_FPU/dut/mant_b_aligned
 
 
 TreeUpdate [SetDefaultTree]
