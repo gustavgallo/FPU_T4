@@ -154,8 +154,7 @@ always_ff @(posedge clock, negedge reset)begin
                     real valor_float;
                     valor_float = (mant_res[24:0]) * 1.0 / (1<<25); // normaliza mantissa para [0,1)
                     valor_float = (1.0 + valor_float) * (2.0 ** exp_res); // aplica expoente
-                    if (sign_res)
-                        valor_float = -valor_float;
+                    
                     $display("Valor final em float: %f", valor_float);
 
                 end
