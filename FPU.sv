@@ -79,6 +79,7 @@ end
 logic pre_done = 0;
 logic [26:0] mant_res;
 logic sign_res;
+logic [5:0] exp_res;
 logic ajusted = 0;
 always_ff @(posedge clock, negedge reset)begin
 
