@@ -42,11 +42,11 @@ state_t EA;
 
 // Sinais internos
 logic sign_a, sign_b;
-logic [5:0] exp_a, exp_b;
+logic signed [5:0] exp_a, exp_b; // expoente pode ser negativo
 logic [24:0] mant_a, mant_b;
-logic [5:0] exp_diff;
+logic signed [5:0] exp_diff; // expoente pode ser negativo
 logic [25:0] mant_a_aligned, mant_b_aligned;
-logic [5:0] exp_common;
+logic signed [5:0] exp_common; // expoente pode ser negativo
 
 localparam BIAS = 31;
 
@@ -80,7 +80,7 @@ logic pre_done = 0;
 logic [26:0] mant_res;
 logic [25:0] mant_a_full, mant_b_full;
 logic sign_res;
-logic [5:0] exp_res;
+logic signed [5:0] exp_res;
 logic ajusted = 0;
 always_ff @(posedge clock, negedge reset)begin
 
@@ -104,8 +104,8 @@ always_ff @(posedge clock, negedge reset)begin
                 exp_res <= exp_common;
                 pre_done <= 1;
                 ajusted <= 0; // Reseta o sinal de ajuste
-                mant_res <= 0; // <-- Adicione isso
-                sign_res <= 0; // <-- Opcional, se quiser garantir
+                mant_res <= 0; 
+                sign_res <= 0; 
 
             end
 
@@ -140,9 +140,14 @@ always_ff @(posedge clock, negedge reset)begin
             end
 
             // Ajuste final do resultado
-            FINAL:begin
-
-                data_out <= {sign_res, exp_res + BIAS, mant_res[24:0]}; // Monta o resultado final
+            FINAL: begin
+                if (mant_res == 0) begin
+                    // Zero: expoente e mantissa zerados, sinal tanto faz
+                    data_out <= {sign_res, 6'b000000, 25'b0};
+                end else begin
+                    // Resultado normal: monta normalmente
+                    data_out <= {sign_res, exp_res + BIAS, mant_res[24:0]};
+                end
                 status_out <= 4'b0000; // Status pode ser ajustado conforme necessário
 
             end
