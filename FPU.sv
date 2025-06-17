@@ -84,13 +84,16 @@ logic [5:0] exp_res;
 logic ajusted = 0;
 always_ff @(posedge clock, negedge reset)begin
 
-    if(!reset)begin
+    if(!reset) begin
         data_out <= 0;
         status_out <= 0;
         pre_done <= 0;
         mant_res <= 0;
         ajusted <= 0;
-    
+        mant_a_full <= 0;
+        mant_b_full <= 0;
+        sign_res <= 0;
+        exp_res <= 0;
     end else begin
         
         case(EA)
@@ -101,6 +104,8 @@ always_ff @(posedge clock, negedge reset)begin
                 exp_res <= exp_common;
                 pre_done <= 1;
                 ajusted <= 0; // Reseta o sinal de ajuste
+                mant_res <= 0; // <-- Adicione isso
+                sign_res <= 0; // <-- Opcional, se quiser garantir
 
             end
 
