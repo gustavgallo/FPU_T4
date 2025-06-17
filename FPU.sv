@@ -128,10 +128,10 @@ always_ff @(posedge clock, negedge reset)begin
                 // adicionei verificação pra ve se é 0
                 if (mant_res == 0) begin
                     ajusted <= 1;
-                end else if (mant_res[26]) begin
+                end else if (mant_res[27]) begin
                     mant_res <= mant_res >> 1;
                     exp_res <= exp_res + 1;
-                end else if (!mant_res[25]) begin
+                end else if (!mant_res[26]) begin
                     mant_res <= mant_res << 1;
                     exp_res <= exp_res - 1;
                 end else begin
