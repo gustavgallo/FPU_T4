@@ -122,7 +122,6 @@ always_ff @(posedge clock, negedge reset)begin
                         sign_res <= sign_b;
                     end
                 end
-                $display("Mantissa antes do AJUST: %b", mant_res);
             end
 
             AJUST: begin
@@ -148,14 +147,6 @@ always_ff @(posedge clock, negedge reset)begin
                 end else begin
                     // Resultado normal: monta normalmente
                     data_out <= {sign_res, exp_res + BIAS, mant_res[24:0]};
-                    $display("Mantissa final: %b", mant_res[24:0]);
-                    $display("Expoente final: %d", exp_res);
-                    $display("Valor final: %d", exp_res);
-                    real valor_float;
-                    valor_float = (mant_res[24:0]) * 1.0 / (1<<25); // normaliza mantissa para [0,1)
-                    valor_float = (1.0 + valor_float) * (2.0 ** exp_res); // aplica expoente
-                    
-                    $display("Valor final em float: %f", valor_float);
 
                 end
                 status_out <= 4'b0000; // Status pode ser ajustado conforme necessário
