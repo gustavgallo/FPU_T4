@@ -77,8 +77,8 @@ end
 
 // lógica de soma e subtração
 logic pre_done = 0;
-logic [26:0] mant_res;
-logic [25:0] mant_a_full, mant_b_full;
+logic [26:0] mant_res; // 27 bits
+logic [25:0] mant_a_full, mant_b_full; // 26 bit
 logic sign_res;
 logic signed [5:0] exp_res;
 logic ajusted = 0;
@@ -122,16 +122,17 @@ always_ff @(posedge clock, negedge reset)begin
                         sign_res <= sign_b;
                     end
                 end
+                $display("Mantissa antes do AJUST: %b", mant_res);
             end
 
             AJUST: begin
                 // adicionei verificação pra ve se é 0
                 if (mant_res == 0) begin
                     ajusted <= 1;
-                end else if (mant_res[27]) begin
+                end else if (mant_res[26]) begin
                     mant_res <= mant_res >> 1;
                     exp_res <= exp_res + 1;
-                end else if (!mant_res[26]) begin
+                end else if (!mant_res[25]) begin
                     mant_res <= mant_res << 1;
                     exp_res <= exp_res - 1;
                 end else begin
@@ -146,7 +147,17 @@ always_ff @(posedge clock, negedge reset)begin
                     data_out <= {sign_res, 6'b000000, 25'b0};
                 end else begin
                     // Resultado normal: monta normalmente
-                    data_out <= {sign_res, exp_res + BIAS, mant_res[25:1]};
+                    data_out <= {sign_res, exp_res + BIAS, mant_res[24:0]};
+                    $display("Mantissa final: %b", mant_res[24:0]);
+                    $display("Expoente final: %d", exp_res);
+                    $display("Valor final: %d", exp_res);
+                    real valor_float;
+                    valor_float = (mant_res[24:0]) * 1.0 / (1<<25); // normaliza mantissa para [0,1)
+                    valor_float = (1.0 + valor_float) * (2.0 ** exp_res); // aplica expoente
+                    if (sign_res)
+                        valor_float = -valor_float;
+                    $display("Valor final em float: %f", valor_float);
+
                 end
                 status_out <= 4'b0000; // Status pode ser ajustado conforme necessário
 
