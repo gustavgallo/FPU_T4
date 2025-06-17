@@ -78,6 +78,7 @@ end
 // lógica de soma e subtração
 logic pre_done = 0;
 logic [26:0] mant_res;
+logic [25:0] mant_a_full, mant_b_full;
 logic sign_res;
 logic [5:0] exp_res;
 logic ajusted = 0;
@@ -95,7 +96,9 @@ always_ff @(posedge clock, negedge reset)begin
         case(EA)
 
             PRE_SUM:begin
-
+                mant_a_full <= mant_a_aligned;
+                mant_b_full <= mant_b_aligned;
+                exp_res <= exp_common;
                 pre_done <= 1;
                 ajusted <= 0; // Reseta o sinal de ajuste
 
@@ -103,18 +106,17 @@ always_ff @(posedge clock, negedge reset)begin
 
             SUM: begin
                 if (sign_a == sign_b) begin // sinais iguais soma
-                    mant_res <= mant_a_aligned + mant_b_aligned;
+                    mant_res <= mant_a_full + mant_b_full;
                     sign_res <= sign_a;
                 end else begin
-                    if (mant_a_aligned > mant_b_aligned) begin // sinais diferentes subtração
-                        mant_res <= mant_a_aligned - mant_b_aligned;
+                    if (mant_a_full > mant_b_full) begin // sinais diferentes subtração
+                        mant_res <= mant_a_full - mant_b_full;
                         sign_res <= sign_a;
                     end else begin
-                        mant_res <= mant_b_aligned - mant_a_aligned;
+                        mant_res <= mant_b_full - mant_a_full;
                         sign_res <= sign_b;
                     end
                 end
-                exp_res <= exp_common;
             end
 
             AJUST: begin
