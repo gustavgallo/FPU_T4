@@ -125,18 +125,18 @@ always_ff @(posedge clock, negedge reset)begin
             end
 
             AJUST: begin
-
-                // Normaliza o resultado
-                if (mant_res[26]) begin
+                // adicionei verificação pra ve se é 0
+                if (mant_res == 0) begin
+                    ajusted <= 1;
+                end else if (mant_res[26]) begin
                     mant_res <= mant_res >> 1;
                     exp_res <= exp_res + 1;
                 end else if (!mant_res[25]) begin
                     mant_res <= mant_res << 1;
                     exp_res <= exp_res - 1;
                 end else begin
-                    ajusted <= 1; // sinaliza que o ajuste foi feito
+                    ajusted <= 1;
                 end
-
             end
 
             // Ajuste final do resultado

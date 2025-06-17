@@ -65,7 +65,7 @@ module tb_FPU;
         // Teste 5: 1.0 + 0.0
         op_A_in <= {1'b0, 6'b011111, 25'b0};
         op_B_in <= {1'b0, 6'b000000, 25'b0};
-        #60;
+        #80;
 
         reset = 0;
         #5; reset = 1;
