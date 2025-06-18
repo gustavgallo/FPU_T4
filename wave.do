@@ -15,6 +15,7 @@ add wave -noupdate -label mant_a_aligned /tb_FPU/dut/mant_a_aligned
 add wave -noupdate -label mant_b_aligned /tb_FPU/dut/mant_b_aligned
 add wave -noupdate -label mant_res /tb_FPU/dut/mant_res
 add wave -noupdate -label exp_diff /tb_FPU/dut/exp_diff
+add wave -noupdate -label exp_diff /tb_FPU/dut/exp_res
 add wave -noupdate -label sign_res /tb_FPU/dut/sign_res
 
 
