@@ -149,7 +149,7 @@ always_ff @(posedge clock, negedge reset)begin
             // Ajuste final do resultado
             FINAL: begin
                 // Overflow
-                if (exp_res > 33) begin
+                if (exp_res > 32) begin
                     status_out <= 4'b0011;
                     
                 end
