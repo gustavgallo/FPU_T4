@@ -83,6 +83,8 @@ logic sign_res;
 logic signed [5:0] exp_res;
 logic ajusted = 0;
 logic inexact = 0;
+logic [6:0] exp_biased;
+logic print_res = 0;
 always_ff @(posedge clock, negedge reset)begin
 
     if(!reset) begin
@@ -164,15 +166,19 @@ always_ff @(posedge clock, negedge reset)begin
                 else begin
                 status_out <= 4'b0001;
                 end
-
+                exp_biased <= exp_res + BIAS;
+                print_res <= 1;
+                if(print_res)begin
                 // verifica se é zero
                 if (mant_res == 0) begin
                     // Zero: expoente e mantissa zerados, sinal tanto faz
                     data_out <= {sign_res, 6'b000000, 25'b0};
                 end else begin
                     // Resultado normal: monta normalmente
-                    data_out <= {sign_res, (exp_res + BIAS)[5:0], mant_res[24:0]};
+                    data_out <= {sign_res, exp_biased[5:0], mant_res[24:0]};
 
+                end
+                print_res <= 0;
                 end
 
             end
@@ -210,9 +216,13 @@ always_ff @(posedge clock, negedge reset)begin
             end
 
             FINAL:begin
-                EA <= PRE_SUM; // Retorna ao estado inicial para nova operação
+                if(print_res)begin
+                    EA <= PRE_SUM; // Retorna ao estado inicial para nova operação
+                end else begin
+                    EA <= FINAL;
+                end
+                
             end
-
         endcase
 
     end
