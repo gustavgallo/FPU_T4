@@ -12,6 +12,18 @@
 
 ---
 
+## ✅ Objetivo
+
+Implementar uma **FPU (Floating Point Unit)** funcional para simular operações com números em ponto flutuante, realizando:
+
+- 🧩 Extração dos campos (sinal, expoente e mantissa)
+- 🔄 Alinhamento dos operandos
+- ➕ Operação de soma ou subtração
+- 📏 Normalização e ajuste de expoente
+- ⚠️ Geração de status (`EXACT`, `OVERFLOW`, `UNDERFLOW`, `INEXACT`)
+
+---
+
 ## 📌 Cálculo de Parâmetros a partir da Matrícula
 
 Conforme regra do enunciado:
@@ -35,16 +47,9 @@ Conforme regra do enunciado:
 | Mantissa  | [24:0]   | 25 bits       |
 
 ---
+## 🎓 Espectro numérico
 
-## ✅ Objetivo
-
-Implementar uma **FPU (Floating Point Unit)** funcional para simular operações com números em ponto flutuante, realizando:
-
-- 🧩 Extração dos campos (sinal, expoente e mantissa)
-- 🔄 Alinhamento dos operandos
-- ➕ Operação de soma ou subtração
-- 📏 Normalização e ajuste de expoente
-- ⚠️ Geração de status (`EXACT`, `OVERFLOW`, `UNDERFLOW`, `INEXACT`)
+![representation](https://github.com/user-attachments/assets/1df3f9da-27c1-4a39-8720-4b149109f1c8)
 
 ---
 
@@ -59,12 +64,10 @@ Implementar uma **FPU (Floating Point Unit)** funcional para simular operações
 
 ---
 
+
+
 ## 🧪 Casos de Teste
 
-```verilog
-// Exemplo: 1.5 + 2.25
-op_A_in <= {1'b0, 6'b011111, 25'b1000000000000000000000000}; // 1.5
-op_B_in <= {1'b0, 6'b100000, 25'b0010000000000000000000000}; // 2.25
-// Resultado esperado: 3.75 → data_out == 0x41C00000
+Os casos teste estão apresentados no arquivo de testbench `tb_FPU.sv`, não foram anexados print de execução nesse `README` por conta da baixa qualidade da forma de onda ao capturar a tela do simulador.
 
 
