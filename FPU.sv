@@ -132,7 +132,7 @@ always_ff @(posedge clock, negedge reset)begin
                 end else if (mant_res[26]) begin
                     mant_res <= mant_res >> 1;
                     exp_res <= exp_res + 1;
-                    if(mant[0] == 1) inexact <= 1;
+                    if(mant_res[0] == 1) inexact <= 1;
                 end else if (!mant_res[25]) begin
                     mant_res <= mant_res << 1;
                     exp_res <= exp_res - 1;
