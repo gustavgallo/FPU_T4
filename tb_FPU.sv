@@ -78,9 +78,9 @@ module tb_FPU;
         reset = 0;
         #5; reset = 1;
 
-        // Teste 7: OVERFLOW -> MAX + 1 = MAX (Overflow)
-        op_A_in <= {1'b0, 6'b111111, 25'b1111111111111111111111111}; // MAX
-        op_B_in <= {1'b0, 6'b111111, 25'b1111111111111111111111111}; // MAX 
+        // Teste 7: OVERFLOW -> expMAX + 1 = + infinito (Overflow)
+        op_A_in <= {1'b0, 6'b111111, 25'b1000000000000000000000000}; // MAX
+        op_B_in <= {1'b0, 6'b111111, 25'b1000000000000000000000000}; // MAX 
         #80;
 
         reset = 0;

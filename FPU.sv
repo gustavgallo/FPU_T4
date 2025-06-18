@@ -139,28 +139,32 @@ always_ff @(posedge clock, negedge reset)begin
 
             AJUST: begin
                 // adicionei verificação pra ve se é 0
-                if (mant_res == 0) begin
-                    ajusted <= 1;
-                end else if (mant_res[26]) begin
-                    mant_res <= mant_res >> 1;
-                    if(exp_res == 63)begin
-                        ajusted <= 1;
-                        overflow <= 1;
-                        
-                    end else exp_res <= exp_res + 1;
-                    if(mant_res[0] == 1) inexact <= 1;
-
-                end else if (!mant_res[25]) begin
-                    mant_res <= mant_res << 1;
-
-                    if(exp_res == 6'b0) begin
-                        underflow <= 1;
-                        ajusted <= 1;
-                    end else exp_res <= exp_res - 1;
-
-                end else begin
-                    ajusted <= 1;
+                if(!ajusted) begin
+                         if (mant_res == 0) begin
+                             ajusted <= 1;
+                         end else if (mant_res[26]) begin
+                             mant_res <= mant_res >> 1;
+                             if(exp_res < 63) begin
+                                 exp_res <= exp_res + 1; // Incrementa o expoente se necessário
+                             end else begin
+                                 overflow <= 1; // Overflow se o expoente ultrapassar o máximo
+                                 ajusted <= 1;
+                             end
+                             if(mant_res[0] == 1) inexact <= 1;
+    
+                         end else if (!mant_res[25]) begin
+                             mant_res <= mant_res << 1;
+    
+                             if(exp_res == 6'b0) begin
+                                 underflow <= 1;
+                                 ajusted <= 1;
+                             end else exp_res <= exp_res - 1;
+    
+                         end else begin
+                             ajusted <= 1;
+                    end
                 end
+
             end
 
             // Ajuste final do resultado
