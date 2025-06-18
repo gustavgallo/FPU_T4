@@ -82,6 +82,7 @@ logic [25:0] mant_a_full, mant_b_full; // 26 bit
 logic sign_res;
 logic signed [5:0] exp_res;
 logic ajusted = 0;
+logic inexact = 0;
 always_ff @(posedge clock, negedge reset)begin
 
     if(!reset) begin
@@ -152,7 +153,7 @@ always_ff @(posedge clock, negedge reset)begin
                     data_out   <= 0;
                 end
                 // Inexact
-                else if () begin
+                else if (inexact) begin
                 status_out <= 4'b1111;
                 end
                 // Exact
