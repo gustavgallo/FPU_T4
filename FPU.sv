@@ -154,7 +154,7 @@ always_ff @(posedge clock, negedge reset)begin
                     
                 end
                 // Underflow
-                else if (exp_res < -33) begin
+                else if (exp_res < -31) begin
                     status_out <= 4'b0111;
                     data_out   <= 0;
                 end
