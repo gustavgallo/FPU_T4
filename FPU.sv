@@ -104,6 +104,7 @@ always_ff @(posedge clock, negedge reset)begin
         sign_res <= 0;
         exp_res <= 0;
         underflow <= 0;
+        overflow <= 0;
     end else begin
         
         case(EA)
@@ -167,6 +168,7 @@ always_ff @(posedge clock, negedge reset)begin
                 // Overflow
                 if (overflow) begin
                     status_out <= 4'b0011;
+                    data_out   <= {sign_res, 6'b111111, 25'b0}; // Representa infinito
                     
                 end
                 // Underflow
