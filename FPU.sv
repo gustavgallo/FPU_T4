@@ -106,11 +106,14 @@ always_ff @(posedge clock, negedge reset)begin
                 pre_done <= 1;
                 ajusted <= 0; // Reseta o sinal de ajuste
                 mant_res <= 0; 
-                sign_res <= 0; 
+
 
             end
 
             SUM: begin
+                $display("sinal A %b", sign_a);
+                $display("sinal B %b", sign_b);
+
                 if (sign_a == sign_b) begin // sinais iguais soma
                     mant_res <= mant_a_full + mant_b_full;
                     sign_res <= sign_a;
