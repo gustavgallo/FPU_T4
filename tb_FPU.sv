@@ -87,8 +87,8 @@ module tb_FPU;
         #5; reset = 1;
 
         // Teste 8: UNDERFLOW -> Num pequeno não representável = arredondamento
-        op_A_in <= {1'b0, 6'b000000, 25'b1}; // MIN
-        op_B_in <= {1'b0, 6'b000000, 25'b1}; // MIN
+        op_A_in <= {1'b0, 6'b000000, 25'b0000000000000000000000010}; 
+        op_B_in <= {1'b1, 6'b000000, 25'b0000000000000000000000000}; 
         #80;
 
         reset = 0;
