@@ -87,7 +87,7 @@ always_ff @(posedge clock, negedge reset)begin
 
     if(!reset) begin
         data_out <= 0;
-        status_out <= {4'b0001};
+        status_out <= 0;
         pre_done <= 0;
         mant_res <= 0;
         ajusted <= 0;
@@ -132,6 +132,7 @@ always_ff @(posedge clock, negedge reset)begin
                 end else if (mant_res[26]) begin
                     mant_res <= mant_res >> 1;
                     exp_res <= exp_res + 1;
+                    if(mant[0] == 1) inexact <= 1;
                 end else if (!mant_res[25]) begin
                     mant_res <= mant_res << 1;
                     exp_res <= exp_res - 1;
