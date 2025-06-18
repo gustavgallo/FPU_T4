@@ -86,7 +86,7 @@ always_ff @(posedge clock, negedge reset)begin
 
     if(!reset) begin
         data_out <= 0;
-        status_out <= 0;
+        status_out <= {4'b0001};
         pre_done <= 0;
         mant_res <= 0;
         ajusted <= 0;
@@ -141,6 +141,26 @@ always_ff @(posedge clock, negedge reset)begin
 
             // Ajuste final do resultado
             FINAL: begin
+                // Overflow
+                if (exp_res > 33) begin
+                    status_out <= 4'b0011;
+                    
+                end
+                // Underflow
+                else if (exp_res < -33) begin
+                    status_out <= 4'b0111;
+                    data_out   <= 0;
+                end
+                // Inexact
+                else if () begin
+                status_out <= 4'b1111;
+                end
+                // Exact
+                else begin
+                status_out <= 4'b0001;
+                end
+
+                // verifica se é zero
                 if (mant_res == 0) begin
                     // Zero: expoente e mantissa zerados, sinal tanto faz
                     data_out <= {sign_res, 6'b000000, 25'b0};
@@ -149,7 +169,6 @@ always_ff @(posedge clock, negedge reset)begin
                     data_out <= {sign_res, exp_res + BIAS, mant_res[24:0]};
 
                 end
-                status_out <= 4'b0000; // Status pode ser ajustado conforme necessário
 
             end
 
