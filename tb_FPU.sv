@@ -73,10 +73,28 @@ module tb_FPU;
         // Teste 6: 1.5 + 2.25 = 3.75
         op_A_in <= {1'b0, 6'b011111, 25'b1000000000000000000000000}; // 1.5
         op_B_in <= {1'b0, 6'b100000, 25'b0010000000000000000000000}; // 2.25
-        #100;
+        #80;
 
         reset = 0;
         #5; reset = 1;
+
+        // Teste 7: OVERFLOW -> MAX + 1 = MAX (Overflow)
+        op_A_in <= {1'b0, 6'b111111, 25'b1}; // MAX
+        op_B_in <= {1'b0, 6'b011111, 25'b0}; 
+        #80;
+
+        reset = 0;
+        #5; reset = 1;
+
+        // Teste 8: UNDERFLOW -> Num pequeno não representável = arredondamento
+        op_A_in <= {1'b0, 6'b000000, 25'b1}; // MIN
+        op_B_in <= {1'b0, 6'b000000, 25'b1}; // MIN
+        #80;
+
+        reset = 0;
+        #5; reset = 1;
+
+
 
         $finish;
     end
