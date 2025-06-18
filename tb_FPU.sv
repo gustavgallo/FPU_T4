@@ -94,6 +94,14 @@ module tb_FPU;
         reset = 0;
         #5; reset = 1;
 
+        // Teste 9: INEXACT -> Último bit se perde 
+        op_A_in <= {1'b0, 6'b100000, 25'b0000000000000000000000001}; 
+        op_B_in <= {1'b0, 6'b100000, 25'b0000000000000000000000000}; 
+        #80;
+
+        reset = 0;
+        #5; reset = 1;
+
 
 
         $finish;
