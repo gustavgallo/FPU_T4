@@ -83,7 +83,7 @@ logic sign_res;
 logic signed [5:0] exp_res;
 logic ajusted = 0;
 logic inexact = 0;
-logic [6:0] exp_biased;
+logic [5:0] exp_biased;
 logic print_res = 0;
 always_ff @(posedge clock, negedge reset)begin
 
@@ -221,7 +221,7 @@ always_ff @(posedge clock, negedge reset)begin
                 end else begin
                     EA <= FINAL;
                 end
-                
+
             end
         endcase
 
