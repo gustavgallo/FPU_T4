@@ -171,7 +171,7 @@ always_ff @(posedge clock, negedge reset)begin
                     data_out <= {sign_res, 6'b000000, 25'b0};
                 end else begin
                     // Resultado normal: monta normalmente
-                    data_out <= {sign_res, exp_res + BIAS, mant_res[24:0]};
+                    data_out <= {sign_res, (exp_res + BIAS)[5:0], mant_res[24:0]};
 
                 end
 
