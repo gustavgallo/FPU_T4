@@ -42,22 +42,26 @@ state_t EA;
 
 // Sinais internos
 logic sign_a, sign_b;
-logic signed [5:0] exp_a, exp_b; // expoente pode ser negativo
+logic unsigned [5:0] exp_a, exp_b; 
 logic [24:0] mant_a, mant_b;
-logic signed [5:0] exp_diff; // expoente pode ser negativo
+logic unsigned [5:0] exp_diff; 
 logic [25:0] mant_a_aligned, mant_b_aligned;
-logic signed [5:0] exp_common; // expoente pode ser negativo
+logic unsigned [5:0] exp_common; 
+logic unsigned [6:0] exp_comparer; 
+
+
+logic signed [6:0] exp_real;
 
 localparam BIAS = 31;
 
 //alinhamento das mantissas e expoentes
 always_comb begin
     sign_a = op_A_in[31];
-    exp_a  = op_A_in[30:25] - BIAS; // Ajusta o expoente subtraindo o bias
+    exp_a  = op_A_in[30:25]; // Ajusta o expoente
     mant_a = op_A_in[24:0];
 
     sign_b = op_B_in[31];
-    exp_b  = op_B_in[30:25] - BIAS; // Ajusta o expoente subtraindo o bias
+    exp_b  = op_B_in[30:25]; // Ajusta o expoente 
     mant_b = op_B_in[24:0];
 
     if (exp_a > exp_b) begin
@@ -85,6 +89,8 @@ logic ajusted = 0;
 logic inexact = 0;
 logic [5:0] exp_biased;
 logic print_res = 0;
+logic underflow;
+logic overflow;
 always_ff @(posedge clock, negedge reset)begin
 
     if(!reset) begin
@@ -97,6 +103,7 @@ always_ff @(posedge clock, negedge reset)begin
         mant_b_full <= 0;
         sign_res <= 0;
         exp_res <= 0;
+        underflow <= 0;
     end else begin
         
         case(EA)
@@ -113,8 +120,7 @@ always_ff @(posedge clock, negedge reset)begin
             end
 
             SUM: begin
-                $display("sinal A %b", sign_a);
-                $display("sinal B %b", sign_b);
+                
 
                 if (sign_a == sign_b) begin // sinais iguais soma
                     mant_res <= mant_a_full + mant_b_full;
@@ -136,11 +142,21 @@ always_ff @(posedge clock, negedge reset)begin
                     ajusted <= 1;
                 end else if (mant_res[26]) begin
                     mant_res <= mant_res >> 1;
-                    exp_res <= exp_res + 1;
+                    if(exp_res == 63)begin
+                        ajusted <= 1;
+                        overflow <= 1;
+                        
+                    end else exp_res <= exp_res + 1;
                     if(mant_res[0] == 1) inexact <= 1;
+
                 end else if (!mant_res[25]) begin
                     mant_res <= mant_res << 1;
-                    exp_res <= exp_res - 1;
+
+                    if(exp_res == 6'b0) begin
+                        underflow <= 1;
+                        ajusted <= 1;
+                    end else exp_res <= exp_res - 1;
+
                 end else begin
                     ajusted <= 1;
                 end
@@ -149,12 +165,12 @@ always_ff @(posedge clock, negedge reset)begin
             // Ajuste final do resultado
             FINAL: begin
                 // Overflow
-                if (exp_res > 32) begin
+                if (overflow) begin
                     status_out <= 4'b0011;
                     
                 end
                 // Underflow
-                else if (exp_res < -31) begin
+                else if (underflow) begin
                     status_out <= 4'b0111;
                     data_out   <= 0;
                 end
@@ -166,7 +182,7 @@ always_ff @(posedge clock, negedge reset)begin
                 else begin
                 status_out <= 4'b0001;
                 end
-                exp_biased <= exp_res + BIAS;
+                exp_biased <= exp_res;
                 print_res <= 1;
                 if(print_res)begin
                 // verifica se é zero
