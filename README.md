@@ -7,8 +7,8 @@
 
 ## 👤 Autor
 
-- **Nome:** Gustavo Gallo  
-- **Curso:** Engenharia da Computação  
+- **Nome:** [Gustavo Tibolla Gallo](https://github.com/gustavgallo)  
+- **Curso:** Engenharia de Computação **PUCRS** 
 
 ---
 
@@ -28,12 +28,12 @@ Implementar uma **FPU (Floating Point Unit)** funcional para simular operações
 
 Conforme regra do enunciado:
 
-- X = 8 + (2+4+1+0+6+5+2+4+2) % 4
-- X = 8 - 2
-- X = 6 *bits*
+- *X = 8 + (2+4+1+0+6+5+2+4+2) % 4*
+- *X = 8 - 2*
+- *X = 6 bits*
 
-- Y = 31 - 6
-- Y = 25 *bits*
+- *Y = 31 - 6*
+- *Y = 25 bits*
 
 ### Resultado final:
 
@@ -75,6 +75,24 @@ Conforme regra do enunciado:
 
 ## 🧪 Casos de Teste
 
-Os casos teste estão apresentados no arquivo de testbench `tb_FPU.sv`, não foram anexados print de execução nesse `README` por conta da baixa qualidade da forma de onda ao capturar a tela do simulador.
+Os casos de teste estão implementados no arquivo `tb_FPU.sv`, cobrindo desde operações simples até situações limite, incluindo:
 
+- ✅ Soma entre números com mesmo expoente  
+- ✅ Soma com o valor zero (`0.0`)  
+- ✅ Subtração entre operandos com sinais opostos  
+- ✅ Resultados que exigem **normalização via shift**  
+- ✅ Situações de **underflow**, **overflow** e **inexact**
 
+📂 Prints de **formas de onda simuladas (waveform)** estão disponíveis na pasta:
+
+👉 [`📁 diretório de resultados`](https://github.com/gustavgallo/FPU_T4/tree/main/tests)
+
+---
+
+### 🔍 Exemplo de teste incluído
+
+```verilog
+// Teste_6: 1.5 + 2.25
+op_A_in <= {1'b0, 6'b011111, 25'b1000000000000000000000000}; // 1.5
+op_B_in <= {1'b0, 6'b100000, 25'b0010000000000000000000000}; // 2.25
+// Esperado: 3.75 → data_out == 0x41C00000
