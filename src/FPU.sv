@@ -105,6 +105,7 @@ always_ff @(posedge clock, negedge reset)begin
         exp_res <= 0;
         underflow <= 0;
         overflow <= 0;
+        inexact <= 0;
     end else begin
         
         case(EA)
