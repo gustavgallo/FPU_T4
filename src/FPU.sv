@@ -158,6 +158,7 @@ always_ff @(posedge clock, negedge reset)begin
                              if(exp_res == 6'b0) begin
                                  underflow <= 1;
                                  ajusted <= 1;
+                                 if(mant_res != 0) mant_res <= 27'd1;
                              end else exp_res <= exp_res - 1;
 
                          end else begin

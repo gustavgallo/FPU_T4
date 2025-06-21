@@ -28,6 +28,13 @@ Implementar uma **FPU (Floating Point Unit)** funcional para simular operações
 
 Conforme regra do enunciado:
 
+- X = 8 + (2+4+1+0+6+5+2+4+2) % 4
+- X = 8 - 2
+- X = 6 *bits*
+
+- Y = 31 - 6
+- Y = 25 *bits*
+
 ### Resultado final:
 
 | Parâmetro | Valor |
